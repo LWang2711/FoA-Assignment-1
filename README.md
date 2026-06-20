@@ -1,2 +1,2 @@
 # FoA-Coursework
-Repository for FoA course work, all self studied throughout the winter semester.
+Repository for FoA coursework, all self studied throughout the winter semester.
