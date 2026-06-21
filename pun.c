@@ -1,11 +1,21 @@
 #include <stdio.h>
-
 int main(void)
 {
-    printf("To C or not ot C: that is the question.\n");
+int height, length, width, volume, weight;
+printf("Enter height of box: ");
+scanf("%d", &height);
+printf("Enter length of box: ");
+scanf("%d", &length);
+printf("Enter width of box: ");
+scanf("%d", &width);
+volume = height * length * width;
+weight = (volume + 165) / 166;
+printf("Volume (cubic inches): %d\n", volume);
+printf("Dimensional weight (pounds): %d\n", weight);
 
-    printf("Hello my name is Laurence Wang ");
-    printf("and I enjoy maths and programming.\n");
+int i;
+scanf("%d", &i);
+printf("%d\n", i);
 
-    return 0;
+return 0;
 }
