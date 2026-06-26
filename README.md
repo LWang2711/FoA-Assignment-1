@@ -1,4 +1,2 @@
-# FoA-Coursework
-Repository for FoA coursework, all self studied throughout the winter semester. Meant to act as a backbone for ADS preparation.
-
-The main resources used include Algorithms Illuminated, Open Data Sructures, C Programming: A Modern Approach, Missing Semester of Your CS Education.
+# FoA-Assignment-1
+Repo for all the source code and tests and output for assignment 1 of FoA which focuses on pathfinding and basic algorithmic thinking related to it.
