@@ -56,3 +56,7 @@ dkms.conf
 
 # Mac junk
 .DS_Store
+
+# user junk
+.vscode
+.Rhistory
