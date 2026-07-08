@@ -25,6 +25,7 @@ int main(void) {
     printf("Level 1:\n");
     PrintMargin();
 
+    // this needs to be a function, fuck
     for (int row = 0; row < MAP_SIZE; row++) {
         for (int col = 0; col < MAP_SIZE; col++) {
             int curr_pos[] = {row, col};
