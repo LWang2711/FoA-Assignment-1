@@ -6,6 +6,7 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define MAP_SIZE 5
 
@@ -41,12 +42,15 @@ int main(void) {
             
             printf("]");
         }
+
         printf("\n");
     }
 
+    printf("\nThe starting position is at MAP[%d][%d]\n", start[0], start[1]);
+    printf("The ending position is at MAP[%d][%d]\n", end[0], end[1]);
+
     return 0;
 }
-
 
 /* 
 Mutate input integer array and integer to be filled with starting and ending coordinates,
@@ -58,14 +62,26 @@ Parameters:
     num_blocks is pointer to int to allow pass by pointer to alter blocks in main
 
 Returns:
-    nothing, function is purely for mutating coords and counts in main
+    nothing, function is purely for mutating coords and counts so that it persists in main
 */
 void FillMap(int start[2], int end[2], int *num_blocks) {
     printf("Please enter the coordinates of the starting position, ending position, and number of obstacles: ");
 
-    scanf("%d %d", &start[0], &start[1]);
-    scanf("%d %d", &end[0], &end[1]);
-    scanf("%d", num_blocks); // num_blocks itself is already an address
+    do {
+        printf("Please enter the coordinates of the starting position: ");
+        scanf("%d %d", &start[0], &start[1]);
+    } while (!WithinBounds(start));
+
+    do {
+        printf("Please enter the coordinates of the ending position: ");
+        scanf("%d %d", &end[0], &end[1]);
+    } while (!WithinBounds(end));
+
+    do {
+        printf("Please how many obstacles will be on the map: ");
+        scanf("%d", num_blocks); // num_blocks itself is already an address
+    } while (*num_blocks > (int) (pow(MAP_SIZE, 2) - 2)); // there cannot be more blocks than available spaces on the map
+    // factoring in space for start and end
 }
 
 /*
