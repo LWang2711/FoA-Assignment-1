@@ -13,7 +13,8 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding
 #define COORD_DIM 2
 
 void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]);
-void PrintMargin(void);
+void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]);
+void PrintHeader(int level);
 bool ArrayEqual(int array1[], int array2[], int len);
 bool WithinBounds(int coords[2]);
 bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[num_blocks][COORD_DIM]);
@@ -24,30 +25,11 @@ int main(void) {
 
     FillMap(MAP, start, end);
 
-    // PrintMap(MAP);
+    int level = 1;
 
-    // this needs to be a function, fuck
-    for (int row = 0; row < MAP_SIZE; row++) {
-        for (int col = 0; col < MAP_SIZE; col++) {
-            int curr_pos[] = {row, col};
-
-            printf("[");
-
-            if (ArrayEqual(curr_pos, start, 2)) {
-                printf("S");
-            } else if (ArrayEqual(curr_pos, end, 2))
-            {
-                printf("E");
-            } else {
-                printf(" ");
-            }
-            
-            printf("]");
-        }
-
-        printf("\n");
-    }
-
+    PrintHeader(level);
+    PrintMap(MAP);
+ 
     printf("\nThe starting position is at MAP[%d][%d]\n", start[0], start[1]);
     printf("The ending position is at MAP[%d][%d]\n", end[0], end[1]);
 
@@ -90,6 +72,7 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
     int block_coords[num_blocks][COORD_DIM];
 
     for (int block = 0; block < num_blocks; block++) {
+        printf("Enter the coordinates of block %d: ", block + 1);
         scanf("%d %d", &block_coords[block][0], &block_coords[block][1]);
     }
 
@@ -112,14 +95,36 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
 }
 
 /*
-Print to terminal the ASCII margin with adjustable length.
+Prints the map with start, end, and block in ASCII form.
+
+Parameter:
+    MAP tracks what object is at each position via char indicators, and is two dimensional
+    array of specified size.
+
+Returns:
+    nothing, purely for printing out MAP in ASCII form.
+*/
+void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]) {
+    for (int row = 0; row < MAP_SIZE; row++) {
+        for (int col = 0; col < MAP_SIZE; col++) {
+            printf("[%c]", MAP[row][col]);
+        }
+        printf("\n");
+    }
+}
+
+/*
+Print to terminal the ASCII form of the level header with adjustable length.
 
 Parameters and return are void since it prints out a margin.
 */
-void PrintMargin(void) {
+void PrintHeader(int level) {
     int margin_len = 33;
 
-    for (int i = 0; i < margin_len; i++) {
+    for (int i = 0; i < margin_len * 2; i++) {
+        if (i == margin_len) {
+            printf("\nLevel %d:\n", level);
+        }
         printf("=");
     }
     printf("\n");
@@ -164,6 +169,7 @@ bool WithinBounds(int coords[2]) {
             return false;
         }
 }
+
 
 /*
 Checks whether a position has a block on it.
