@@ -10,20 +10,21 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding
 
 #define MAP_SIZE 5
 
-void FillMap(int start[2], int end[2], int *num_blocks);
+#define COORD_DIM 2
+
+void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]);
 void PrintMargin(void);
 bool ArrayEqual(int array1[], int array2[], int len);
 bool WithinBounds(int coords[2]);
+bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[num_blocks][COORD_DIM]);
 
 int main(void) {
-    int start[2], end[2], blocks;
+    int start[2], end[2];
+    char MAP[MAP_SIZE][MAP_SIZE];
 
-    FillMap(start, end, &blocks); // fill starting and ending coords and number of blocks
-    // note that the spec says that the coords are indexed from 0
+    FillMap(MAP, start, end);
 
-    PrintMargin();
-    printf("Level 1:\n");
-    PrintMargin();
+    // PrintMap(MAP);
 
     // this needs to be a function, fuck
     for (int row = 0; row < MAP_SIZE; row++) {
@@ -65,8 +66,7 @@ Parameters:
 Returns:
     nothing, function is purely for mutating coords and counts so that it persists in main
 */
-void FillMap(int start[2], int end[2], int *num_blocks) {
-    printf("Please enter the coordinates of the starting position, ending position, and number of obstacles: ");
+void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
 
     do {
         printf("Please enter the coordinates of the starting position: ");
@@ -78,11 +78,37 @@ void FillMap(int start[2], int end[2], int *num_blocks) {
         scanf("%d %d", &end[0], &end[1]);
     } while (!WithinBounds(end));
 
+    int num_blocks;
+
     do {
         printf("Please how many obstacles will be on the map: ");
-        scanf("%d", num_blocks); // num_blocks itself is already an address
-    } while (*num_blocks > (int) (pow(MAP_SIZE, 2) - 2)); // there cannot be more blocks than available spaces on the map
+        scanf("%d", &num_blocks);
+    } while (num_blocks > (int) (pow(MAP_SIZE, 2) - 2)); // there cannot be more blocks than available spaces on the map
     // factoring in space for start and end
+
+    // store block coords as same format as input
+    int block_coords[num_blocks][COORD_DIM];
+
+    for (int block = 0; block < num_blocks; block++) {
+        scanf("%d %d", &block_coords[block][0], &block_coords[block][1]);
+    }
+
+    for (int row = 0; row < MAP_SIZE; row++) {
+        for (int col = 0; col < MAP_SIZE; col++) {
+            int curr_pos[] = {row, col}; // could use pointer for better aliasing?
+
+            if (ArrayEqual(curr_pos, start, COORD_DIM)) {
+                MAP[row][col] = 'S';
+            } else if (ArrayEqual(curr_pos, end, COORD_DIM)) {
+                MAP[row][col] = 'E';
+            } else if (BlockPresent(num_blocks, curr_pos, block_coords)) {
+                MAP[row][col] = 'X';
+            } else {
+                MAP[row][col] = ' ';
+            }
+
+        }
+    }
 }
 
 /*
@@ -137,6 +163,29 @@ bool WithinBounds(int coords[2]) {
         } else {
             return false;
         }
+}
+
+/*
+Checks whether a position has a block on it.
+
+Parameters:
+    num_blocks the number of blocks as an int.
+    curr_position in standard {row, col} form as int.
+    block_coords which is a num_block by standard coord dimension two-dimensional array which stores
+    the coords of all the blocks.
+
+Returns:
+    true if any of the blocks match current position.
+    false if none of the blocks match the current position.
+*/
+bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[num_blocks][COORD_DIM]) {
+    for (int block = 0; block < num_blocks; block++) {
+        if (ArrayEqual(block_coords[block], curr_position, COORD_DIM)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
