@@ -1,7 +1,7 @@
 /*
 a1.c
 
-Source code for FoA assigment 1 where the focus in algorithmic pathfinding
+Source code for FoA assigment 1 where the focus in algorithmic pathfinding.
  */
 
 #include <stdio.h>
@@ -12,8 +12,10 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding
 
 #define COORD_DIM 2
 
-void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]);
+void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
 void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]);
+void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
+int DirectionalMove(int curr_dim, int target_dim);
 void PrintHeader(int level);
 bool ArrayEqual(int array1[], int array2[], int len);
 bool WithinBounds(int coords[2]);
@@ -32,6 +34,12 @@ int main(void) {
  
     printf("\nThe starting position is at MAP[%d][%d]\n", start[0], start[1]);
     printf("The ending position is at MAP[%d][%d]\n", end[0], end[1]);
+
+    level = 2;
+
+    PrintHeader(level);
+
+    SimpleDirections(MAP, start, end);
 
     return 0;
 }
@@ -63,7 +71,7 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
     int num_blocks;
 
     do {
-        printf("Please how many obstacles will be on the map: ");
+        printf("Please enter how many obstacles will be on the map: ");
         scanf("%d", &num_blocks);
     } while (num_blocks > (int) (pow(MAP_SIZE, 2) - 2)); // there cannot be more blocks than available spaces on the map
     // factoring in space for start and end
@@ -72,7 +80,7 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
     int block_coords[num_blocks][COORD_DIM];
 
     for (int block = 0; block < num_blocks; block++) {
-        printf("Enter the coordinates of block %d: ", block + 1);
+        printf("Please enter the coordinates of block %d: ", block + 1);
         scanf("%d %d", &block_coords[block][0], &block_coords[block][1]);
     }
 
@@ -89,7 +97,6 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
             } else {
                 MAP[row][col] = ' ';
             }
-
         }
     }
 }
@@ -111,6 +118,70 @@ void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]) {
         }
         printf("\n");
     }
+}
+
+/* 
+Takes in the dimensions of a map and draws out the simple directional path and the number
+of steps taken to go froms start to finish. Path may be not possible using basic directions in
+which case path will terminate on step which gets stuck.
+
+Parameters:
+    MAP the two-dimensional array which contains where there is start, end, and blocks as chars.
+    coords of both start and end in standard coordinate form of rows and cols respectively.
+
+Returns:
+    nothing, since only tracks the path and number of step and prints out both assuming not getting stuck
+    otherwise will print out that it got stuck
+*/
+void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]) {
+    int curr_row = start[0], curr_col = start[1];
+    int tar_row = end[0], tar_col = end[1];
+    
+    int step_count = 0;
+
+    int next_row;
+    char next_row_char;
+
+    while (curr_row != tar_row) {
+        next_row = curr_row + DirectionalMove(curr_row, tar_row);
+        next_row_char = MAP[next_row][curr_col];
+
+        if (next_row_char == ' ') {
+            MAP[next_row][curr_col] = '+';
+            step_count++;
+            curr_row = next_row;
+        } //else if (next_row_char == 'X') {
+
+        //}
+    }
+}
+
+/* 
+Returns the index change value in one dimension which should be taken to go from an
+origin to a target.
+
+Parameters:
+    curr_dim is the index position value of the origin position in whatever dimension.
+    target_dim is the index position value of the target position in whatever dimension.
+
+Returns:
+    -1 if origin should move backwards towards target in dimension
+    1 if origin should move forward towards target in dimension
+    0 if origin has already reached target in dimension
+
+*/
+int DirectionalMove(int curr_dim, int target_dim) {
+    int toward_step;
+
+    if (curr_dim > target_dim) {
+        toward_step = -1;
+    } else if (curr_dim < target_dim) {
+        toward_step = 1;
+    } else {
+        toward_step = 0;
+    }
+
+    return toward_step;
 }
 
 /*
