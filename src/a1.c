@@ -162,12 +162,46 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
             next_obj = MAP[curr_pos[0]][next_pos[1]];
             if (next_obj == 'X') { // case of getting stuck
                 printf("SimpleDirections took %d steps and got stuck.\n\n", step_count);
-                break;
+                return;
             } else if (next_obj == ' ') { // if next col is clear to move
                 MAP[curr_pos[0]][next_pos[1]] = '+';
                 step_count++;
                 curr_pos[1] = next_pos[1];
             }
+        } else if (next_obj == 'E') { // if the target had been reached
+            curr_pos[0] = tar_pos[0];
+            step_count++;
+            printf("SimpleDirections took %d steps to find the goal.\n\n", step_count);
+        }
+    }
+
+    /* copy and paste forced repetition here which could maybe be refactored better? Switching out which
+    one is current and which one is next based on whether rows or columns are to be navigated?*/
+    // this most likely needs refactoring since it's super awkward, though not a real project though
+
+    while (curr_pos[1] != tar_pos[1]) { // move for cols second
+        next_pos[1] = curr_pos[1] + DirectionalMove(next_pos[1], tar_pos[1]);
+        next_obj = MAP[curr_pos[0]][next_pos[1]];
+
+        if (next_obj == ' ') {
+            MAP[curr_pos[0]][next_pos[1]] = '+';
+            step_count++;
+            curr_pos[1] = next_pos[1];
+        } else if (next_obj == 'X') { // if next col is blocked
+            next_pos[0] = curr_pos[0] + DirectionalMove(curr_pos[0], tar_pos[0]);
+            next_obj = MAP[next_pos[0]][curr_pos[1]];
+            if (next_obj == 'X') { // case of getting stuck
+                printf("SimpleDirections took %d steps and got stuck.\n\n", step_count);
+                return;
+            } else if (next_obj == ' ') { // if next row is clear to move
+                MAP[next_pos[0]][curr_pos[1]] = '+';
+                step_count++;
+                curr_pos[0] = next_pos[0];
+            }
+        } else if (next_obj == 'E') { // if the target had been reached
+            curr_pos[1] = tar_pos[1];
+            step_count++;
+            printf("SimpleDirections took %d steps to find the goal.\n\n", step_count);
         }
     }
 }
@@ -184,7 +218,6 @@ Returns:
     -1 if origin should move backwards towards target in dimension
     1 if origin should move forward towards target in dimension
     0 if origin has already reached target in dimension
-
 */
 int DirectionalMove(int curr_dim, int target_dim) {
     int toward_step;
