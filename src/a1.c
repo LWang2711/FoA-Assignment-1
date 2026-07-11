@@ -30,6 +30,7 @@ int main(void) {
     int level = 1;
 
     PrintHeader(level);
+
     PrintMap(MAP);
  
     printf("\nThe starting position is at MAP[%d][%d]\n", start[0], start[1]);
@@ -40,6 +41,8 @@ int main(void) {
     PrintHeader(level);
 
     SimpleDirections(MAP, start, end);
+
+    PrintMap(MAP);
 
     return 0;
 }
@@ -134,25 +137,38 @@ Returns:
     otherwise will print out that it got stuck
 */
 void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]) {
-    int curr_row = start[0], curr_col = start[1];
-    int tar_row = end[0], tar_col = end[1];
+    // don't know if there is any point of keeping two dimensions in array form instead of
+    // separately for clarity purposes
+
+    int curr_pos[COORD_DIM] = {start[0], start[1]};
+    int tar_pos[COORD_DIM] = {end[0], end[1]};
     
     int step_count = 0;
 
-    int next_row;
-    char next_row_char;
+    int next_pos[COORD_DIM]; // tracks index of next position of interest
+    char next_obj; // tracks what object is at next position of interest
 
-    while (curr_row != tar_row) {
-        next_row = curr_row + DirectionalMove(curr_row, tar_row);
-        next_row_char = MAP[next_row][curr_col];
+    while (curr_pos[0] != tar_pos[0]) { // move for rows first
+        next_pos[0] = curr_pos[0] + DirectionalMove(next_pos[0], tar_pos[0]);
+        next_obj = MAP[next_pos[0]][curr_pos[1]];
 
-        if (next_row_char == ' ') {
-            MAP[next_row][curr_col] = '+';
+        // must make sure that next position is clear before changing any indicies or steps
+        if (next_obj == ' ') { // if next row is clear to move
+            MAP[next_pos[0]][curr_pos[1]] = '+';
             step_count++;
-            curr_row = next_row;
-        } //else if (next_row_char == 'X') {
-
-        //}
+            curr_pos[0] = next_pos[0];
+        } else if (next_obj == 'X') { // if row is blocked
+            next_pos[1] = curr_pos[1] + DirectionalMove(curr_pos[1], tar_pos[1]);
+            next_obj = MAP[curr_pos[0]][next_pos[1]];
+            if (next_obj == 'X') { // case of getting stuck
+                printf("SimpleDirections took %d steps and got stuck.\n\n", step_count);
+                break;
+            } else if (next_obj == ' ') { // if next col is clear to move
+                MAP[curr_pos[0]][next_pos[1]] = '+';
+                step_count++;
+                curr_pos[1] = next_pos[1];
+            }
+        }
     }
 }
 
