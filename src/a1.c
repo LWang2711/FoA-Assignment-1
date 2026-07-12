@@ -15,7 +15,7 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding.
 void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
 void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]);
 void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
-void ClosestNeighbours(char MAP[MAP_SIZE][MAP_SIZE], int start);
+void ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM]);
 void ClearMap(char MAP[MAP_SIZE][MAP_SIZE]);
 int DirectionalMove(int curr_dim, int target_dim);
 void PrintHeader(int level);
@@ -52,7 +52,9 @@ int main(void) {
 
     ClearMap(MAP);
 
-    // ClosestNeighbours(MAP, start);
+    ClosestFreeNeighbour(MAP, start);
+
+    PrintMap(MAP);
 
     return 0;
 }
@@ -216,6 +218,37 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
     }
 }
 
+
+
+void ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM]) {
+    enum {
+        NUM_DIRECTIONS = 4
+    };
+    int closest_movements[NUM_DIRECTIONS][2] = { // each array is the desired move in each direction in coordinate form
+        {-1, 0}, // above move
+        {0, 1}, // right move
+        {1, 0}, // down move
+        {0, -1} // left move
+    };
+
+    for (int dir_ind = 0; dir_ind < NUM_DIRECTIONS; dir_ind++) { // in order of direction
+        int neigh_pos[COORD_DIM];
+
+        neigh_pos[0] = start[0] + closest_movements[dir_ind][0];
+        neigh_pos[1] = start[1] + closest_movements[dir_ind][1];
+
+        char neigh_obj = MAP[neigh_pos[0]][neigh_pos[1]];
+
+        if (WithinBounds(neigh_pos) && neigh_obj == ' ') { // if next move empty
+            MAP[neigh_pos[0]][neigh_pos[1]] = '+';
+            ClosestFreeNeighbour(MAP, neigh_pos);
+            break;
+        } else if (WithinBounds(neigh_pos) && neigh_obj == 'E') { // if next move is end
+            break;
+        }
+    }
+}
+
 /* 
 Clears the map of all previously drawn out paths.
 */
@@ -304,7 +337,7 @@ Return:
     returns true if within the map geometry
     returns false if otherwise
 */
-bool WithinBounds(int coords[2]) {
+bool WithinBounds(int coords[COORD_DIM]) {
     if (coords[0] >= 0 && coords[0] < MAP_SIZE &&
         coords[1] >= 0 && coords[1] < MAP_SIZE) {
             return true;
