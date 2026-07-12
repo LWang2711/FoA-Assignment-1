@@ -15,6 +15,8 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding.
 void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
 void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]);
 void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
+void ClosestNeighbours(char MAP[MAP_SIZE][MAP_SIZE], int start);
+void ClearMap(char MAP[MAP_SIZE][MAP_SIZE]);
 int DirectionalMove(int curr_dim, int target_dim);
 void PrintHeader(int level);
 bool ArrayEqual(int array1[], int array2[], int len);
@@ -43,6 +45,14 @@ int main(void) {
     SimpleDirections(MAP, start, end);
 
     PrintMap(MAP);
+
+    level = 3;
+
+    PrintHeader(level);
+
+    ClearMap(MAP);
+
+    // ClosestNeighbours(MAP, start);
 
     return 0;
 }
@@ -157,10 +167,10 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
             MAP[next_pos[0]][curr_pos[1]] = '+';
             step_count++;
             curr_pos[0] = next_pos[0];
-        } else if (next_obj == 'X') { // if row is blocked
+        } else if (next_obj == 'X') { // if next row is blocked
             next_pos[1] = curr_pos[1] + DirectionalMove(curr_pos[1], tar_pos[1]);
             next_obj = MAP[curr_pos[0]][next_pos[1]];
-            if (next_obj == 'X') { // case of getting stuck
+            if (next_obj == 'X') { // case of getting stuck for adjacent col also blocked
                 printf("SimpleDirections took %d steps and got stuck.\n\n", step_count);
                 return;
             } else if (next_obj == ' ') { // if next col is clear to move
@@ -183,14 +193,14 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
         next_pos[1] = curr_pos[1] + DirectionalMove(next_pos[1], tar_pos[1]);
         next_obj = MAP[curr_pos[0]][next_pos[1]];
 
-        if (next_obj == ' ') {
+        if (next_obj == ' ') { // if next col is empty to move into
             MAP[curr_pos[0]][next_pos[1]] = '+';
             step_count++;
             curr_pos[1] = next_pos[1];
         } else if (next_obj == 'X') { // if next col is blocked
             next_pos[0] = curr_pos[0] + DirectionalMove(curr_pos[0], tar_pos[0]);
             next_obj = MAP[next_pos[0]][curr_pos[1]];
-            if (next_obj == 'X') { // case of getting stuck
+            if (next_obj == 'X') { // case of getting stuck for adjacent row also blocked
                 printf("SimpleDirections took %d steps and got stuck.\n\n", step_count);
                 return;
             } else if (next_obj == ' ') { // if next row is clear to move
@@ -202,6 +212,19 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
             curr_pos[1] = tar_pos[1];
             step_count++;
             printf("SimpleDirections took %d steps to find the goal.\n\n", step_count);
+        }
+    }
+}
+
+/* 
+Clears the map of all previously drawn out paths.
+*/
+void ClearMap(char MAP[MAP_SIZE][MAP_SIZE]) {
+    for (int row = 0; row < MAP_SIZE; row++) {
+        for (int col = 0; col < MAP_SIZE; col++) {
+            if (MAP[row][col] == '+') {
+                MAP[row][col] = ' ';
+            }
         }
     }
 }
@@ -289,7 +312,6 @@ bool WithinBounds(int coords[2]) {
             return false;
         }
 }
-
 
 /*
 Checks whether a position has a block on it.
