@@ -6,7 +6,6 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding.
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
 
 #define MAP_SIZE 5
 
@@ -15,7 +14,7 @@ Source code for FoA assigment 1 where the focus in algorithmic pathfinding.
 void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
 void PrintMap(char MAP[MAP_SIZE][MAP_SIZE]);
 void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]);
-void ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM]);
+int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int steps);
 void ClearMap(char MAP[MAP_SIZE][MAP_SIZE]);
 int DirectionalMove(int curr_dim, int target_dim);
 void PrintHeader(int level);
@@ -52,9 +51,13 @@ int main(void) {
 
     ClearMap(MAP);
 
-    ClosestFreeNeighbour(MAP, start);
+    int starting_step_count = 0;
+
+    int steps = ClosestFreeNeighbour(MAP, start, starting_step_count);
 
     PrintMap(MAP);
+
+    printf("\nClosestFreeNeighbour took %d steps.\n", steps);
 
     return 0;
 }
@@ -88,7 +91,7 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
     do {
         printf("Please enter how many obstacles will be on the map: ");
         scanf("%d", &num_blocks);
-    } while (num_blocks > (int) (pow(MAP_SIZE, 2) - 2)); // there cannot be more blocks than available spaces on the map
+    } while (num_blocks > (int) (MAP_SIZE * MAP_SIZE - 2)); // there cannot be more blocks than available spaces on the map
     // factoring in space for start and end
 
     // store block coords as same format as input
@@ -220,7 +223,7 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
 
 
 
-void ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM]) {
+int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int steps) {
     enum {
         NUM_DIRECTIONS = 4
     };
@@ -241,12 +244,13 @@ void ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM]) {
 
         if (WithinBounds(neigh_pos) && neigh_obj == ' ') { // if next move empty
             MAP[neigh_pos[0]][neigh_pos[1]] = '+';
-            ClosestFreeNeighbour(MAP, neigh_pos);
-            break;
+            return ClosestFreeNeighbour(MAP, neigh_pos, ++steps);
         } else if (WithinBounds(neigh_pos) && neigh_obj == 'E') { // if next move is end
-            break;
+            return ++steps;
         }
     }
+
+    return steps++;
 }
 
 /* 
