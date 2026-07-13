@@ -23,7 +23,7 @@ bool WithinBounds(int coords[2]);
 bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[num_blocks][COORD_DIM]);
 
 int main(void) {
-    int start[2], end[2];
+    int start[COORD_DIM], end[COORD_DIM];
     char MAP[MAP_SIZE][MAP_SIZE];
 
     FillMap(MAP, start, end);
@@ -74,7 +74,7 @@ Parameters:
 Returns:
     nothing, function is purely for mutating coords and counts so that it persists in main
 */
-void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
+void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]) {
 
     do {
         printf("Please enter the coordinates of the starting position: ");
@@ -94,8 +94,8 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[2], int end[2]) {
     } while (num_blocks > (int) (MAP_SIZE * MAP_SIZE - 2)); // there cannot be more blocks than available spaces on the map
     // factoring in space for start and end
 
-    // store block coords as same format as input
-    int block_coords[num_blocks][COORD_DIM];
+    // store block coords as same format as input and limit to possible maximum number of blocks
+    int block_coords[MAP_SIZE * MAP_SIZE - 2][COORD_DIM];
 
     for (int block = 0; block < num_blocks; block++) {
         printf("Please enter the coordinates of block %d: ", block + 1);
@@ -164,7 +164,7 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
     char next_obj; // tracks what object is at next position of interest
 
     while (curr_pos[0] != tar_pos[0]) { // move for rows first
-        next_pos[0] = curr_pos[0] + DirectionalMove(next_pos[0], tar_pos[0]);
+        next_pos[0] = curr_pos[0] + DirectionalMove(curr_pos[0], tar_pos[0]);
         next_obj = MAP[next_pos[0]][curr_pos[1]];
 
         // must make sure that next position is clear before changing any indicies or steps
@@ -195,7 +195,7 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
     // this most likely needs refactoring since it's super awkward, though not a real project though
 
     while (curr_pos[1] != tar_pos[1]) { // move for cols second
-        next_pos[1] = curr_pos[1] + DirectionalMove(next_pos[1], tar_pos[1]);
+        next_pos[1] = curr_pos[1] + DirectionalMove(curr_pos[1], tar_pos[1]);
         next_obj = MAP[curr_pos[0]][next_pos[1]];
 
         if (next_obj == ' ') { // if next col is empty to move into
@@ -239,13 +239,17 @@ int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int
 
         neigh_pos[0] = start[0] + closest_movements[dir_ind][0];
         neigh_pos[1] = start[1] + closest_movements[dir_ind][1];
+        
+        if (!WithinBounds(neigh_pos)) {
+            continue;
+        }
 
         char neigh_obj = MAP[neigh_pos[0]][neigh_pos[1]];
 
-        if (WithinBounds(neigh_pos) && neigh_obj == ' ') { // if next move empty
+        if (neigh_obj == ' ') { // if next move empty
             MAP[neigh_pos[0]][neigh_pos[1]] = '+';
             return ClosestFreeNeighbour(MAP, neigh_pos, ++steps);
-        } else if (WithinBounds(neigh_pos) && neigh_obj == 'E') { // if next move is end
+        } else if (neigh_obj == 'E') { // if next move is end
             return ++steps;
         }
     }
