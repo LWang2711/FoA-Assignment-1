@@ -152,9 +152,6 @@ Returns:
     otherwise will print out that it got stuck
 */
 void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]) {
-    // don't know if there is any point of keeping two dimensions in array form instead of
-    // separately for clarity purposes
-
     int curr_pos[COORD_DIM] = {start[0], start[1]};
     int tar_pos[COORD_DIM] = {end[0], end[1]};
     
@@ -191,8 +188,8 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
     }
 
     /* copy and paste forced repetition here which could maybe be refactored better? Switching out which
-    one is current and which one is next based on whether rows or columns are to be navigated?*/
-    // this most likely needs refactoring since it's super awkward, though not a real project though
+    one is current and which one is next based on whether rows or columns are to be navigated?
+    this most likely needs refactoring since it's super awkward, though not a real project though so just leave it?*/
 
     while (curr_pos[1] != tar_pos[1]) { // move for cols second
         next_pos[1] = curr_pos[1] + DirectionalMove(curr_pos[1], tar_pos[1]);
@@ -222,7 +219,19 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
 }
 
 
+/* 
+Draws on the map the path attempted to reach end from start. Returns itself the number of steps taken to reach
+end or for the program to terminate. Uses Closest Neighbour pathfinding algorithm as specified.
 
+Parameters:
+    MAP which is the current state of the map storing char objects.
+    start and end which are both in standard coordinate form using int.
+    steps which is the initial number of steps already taken as int.
+
+Returns:
+    steps which as an int is the total number of steps taken to reach the end or for the program
+    itself to terminate.
+*/
 int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int steps) {
     enum {
         NUM_DIRECTIONS = 4
