@@ -60,3 +60,6 @@ dkms.conf
 
 # vscode config
 .vscode
+
+# Testing output
+tests/test_results/

@@ -263,7 +263,7 @@ int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int
         }
     }
 
-    return steps++;
+    return ++steps;
 }
 
 /* 

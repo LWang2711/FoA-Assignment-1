@@ -1,2 +1,0 @@
-Level 4 is a written-answer section in a1.c.
-No official output file is expected from the provided specification.
