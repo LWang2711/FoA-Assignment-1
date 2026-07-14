@@ -77,19 +77,16 @@ Returns:
 void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_DIM]) {
 
     do {
-        printf("Please enter the coordinates of the starting position: ");
         scanf("%d %d", &start[0], &start[1]);
     } while (!WithinBounds(start));
 
     do {
-        printf("Please enter the coordinates of the ending position: ");
         scanf("%d %d", &end[0], &end[1]);
     } while (!WithinBounds(end));
 
     int num_blocks;
 
     do {
-        printf("Please enter how many obstacles will be on the map: ");
         scanf("%d", &num_blocks);
     } while (num_blocks > (int) (MAP_SIZE * MAP_SIZE - 2)); // there cannot be more blocks than available spaces on the map
     // factoring in space for start and end
@@ -98,7 +95,6 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_D
     int block_coords[MAP_SIZE * MAP_SIZE - 2][COORD_DIM];
 
     for (int block = 0; block < num_blocks; block++) {
-        printf("Please enter the coordinates of block %d: ", block + 1);
         scanf("%d %d", &block_coords[block][0], &block_coords[block][1]);
     }
 
@@ -237,13 +233,13 @@ int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int
         NUM_DIRECTIONS = 4
     };
     int closest_movements[NUM_DIRECTIONS][2] = { // each array is the desired move in each direction in coordinate form
-        {-1, 0}, // above move
-        {0, 1}, // right move
-        {1, 0}, // down move
-        {0, -1} // left move
+        {-1, 0}, // above move to neigbour
+        {0, 1}, // right move to neighbour
+        {1, 0}, // down move to neighbour
+        {0, -1} // left move to neighbour
     };
 
-    for (int dir_ind = 0; dir_ind < NUM_DIRECTIONS; dir_ind++) { // in order of direction
+    for (int dir_ind = 0; dir_ind < NUM_DIRECTIONS; dir_ind++) { // in order of neighbour direction
         int neigh_pos[COORD_DIM];
 
         neigh_pos[0] = start[0] + closest_movements[dir_ind][0];
@@ -255,15 +251,16 @@ int ClosestFreeNeighbour(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int
 
         char neigh_obj = MAP[neigh_pos[0]][neigh_pos[1]];
 
-        if (neigh_obj == ' ') { // if next move empty
+        if (neigh_obj == ' ') { // if next move to neighbour is empty
             MAP[neigh_pos[0]][neigh_pos[1]] = '+';
             return ClosestFreeNeighbour(MAP, neigh_pos, ++steps);
         } else if (neigh_obj == 'E') { // if next move is end
             return ++steps;
         }
     }
-
-    return ++steps;
+    
+    // all neighbours were checked and no move was possible
+    return steps;
 }
 
 /* 
@@ -312,7 +309,7 @@ Print to terminal the ASCII form of the level header with adjustable length.
 Parameters and return are void since it prints out a margin.
 */
 void PrintHeader(int level) {
-    int margin_len = 33;
+    int margin_len = 32;
 
     for (int i = 0; i < margin_len * 2; i++) {
         if (i == margin_len) {
