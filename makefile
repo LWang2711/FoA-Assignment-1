@@ -20,5 +20,5 @@ run: $(EXE)
 clean: 
 	rm -rf build
 
-test:
+test: $(EXE)
 	./tests/run_test.sh

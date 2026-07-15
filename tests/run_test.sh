@@ -2,6 +2,8 @@
 
 mkdir -p tests/test_results
 
+is_failed=0
+
 for test_number in 0 1 2 3
 do
     actual="tests/test_results/test${test_number}_actual.txt"
@@ -23,5 +25,8 @@ do
         echo "PASS: test${test_number}"
     else
         echo "FAIL: test${test_number}"
+        is_failed=1
     fi
 done
+
+exit "${is_failed}"

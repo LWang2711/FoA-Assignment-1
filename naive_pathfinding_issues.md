@@ -54,3 +54,5 @@ SimpleDirections took 2 steps and got stuck.
 
 For larger maps, this many be a clear issue since the pathfinder will move a lot of steps in a direction which may cause it to get stuck in the future. This exacerbates what was highlighted before, that the algorithm isn't desgined to know the actual "human" best way forward. So it just heads in an intuively "bad" direction for a long time if the map is larger. Other than that, a larger map doesn't make this algorithm any more or less naive, rather it struggles in small and large maps alike.
 
+In a more algorithmic sense, the efficiency is mostly fine, being approximately linear in complexity. However, the algorithm is inherently greedy, and it gets punished hard for this. It cannot try out other paths which can get to the objective although with longer time needed. Many times, there is a clear path to the end but the pathfinder cannot move in the opposite direction of end. This extends to inability to backtrack as well.
+

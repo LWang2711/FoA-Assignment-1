@@ -1,7 +1,8 @@
 /*
 a1.c
 
-Source code for FoA assigment 1 where the focus in algorithmic pathfinding.
+Source code for FoA assigment 1 where the focus in algorithmic pathfinding. Laying down
+a foundation in basic C coding style and workflow.
  */
 
 #include <stdio.h>
@@ -20,7 +21,7 @@ int DirectionalMove(int curr_dim, int target_dim);
 void PrintHeader(int level);
 bool ArrayEqual(int array1[], int array2[], int len);
 bool WithinBounds(int coords[2]);
-bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[num_blocks][COORD_DIM]);
+bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[][COORD_DIM]);
 
 int main(void) {
     int start[COORD_DIM], end[COORD_DIM];
@@ -98,9 +99,10 @@ void FillMap(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int end[COORD_D
         scanf("%d %d", &block_coords[block][0], &block_coords[block][1]);
     }
 
+    // could just index directly into map after placing spaces
     for (int row = 0; row < MAP_SIZE; row++) {
         for (int col = 0; col < MAP_SIZE; col++) {
-            int curr_pos[] = {row, col}; // could use pointer for better aliasing?
+            int curr_pos[] = {row, col};
 
             if (ArrayEqual(curr_pos, start, COORD_DIM)) {
                 MAP[row][col] = 'S';
@@ -166,6 +168,11 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
             step_count++;
             curr_pos[0] = next_pos[0];
         } else if (next_obj == 'X') { // if next row is blocked
+            if (DirectionalMove(curr_pos[1], tar_pos[1]) == 0) { // pathfinder is not allowed to move in the opposite direction of target
+                printf("SimpleDirection took %d steps and got stuck.\n\n", step_count);
+                return;
+            }
+
             next_pos[1] = curr_pos[1] + DirectionalMove(curr_pos[1], tar_pos[1]);
             next_obj = MAP[curr_pos[0]][next_pos[1]];
             if (next_obj == 'X') { // case of getting stuck for adjacent col also blocked
@@ -183,9 +190,7 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
         }
     }
 
-    /* copy and paste forced repetition here which could maybe be refactored better? Switching out which
-    one is current and which one is next based on whether rows or columns are to be navigated?
-    this most likely needs refactoring since it's super awkward, though not a real project though so just leave it?*/
+    // could write function to pathfind in a specified dimension instead of repeating with different index
 
     while (curr_pos[1] != tar_pos[1]) { // move for cols second
         next_pos[1] = curr_pos[1] + DirectionalMove(curr_pos[1], tar_pos[1]);
@@ -196,6 +201,11 @@ void SimpleDirections(char MAP[MAP_SIZE][MAP_SIZE], int start[COORD_DIM], int en
             step_count++;
             curr_pos[1] = next_pos[1];
         } else if (next_obj == 'X') { // if next col is blocked
+            if (DirectionalMove(curr_pos[0], tar_pos[0]) == 0) { // pathfinder is not allowed to move in the opposite direction of target
+                printf("SimpleDirections took %d steps and got stuck.\n\n", step_count);
+                return;
+            }
+
             next_pos[0] = curr_pos[0] + DirectionalMove(curr_pos[0], tar_pos[0]);
             next_obj = MAP[next_pos[0]][curr_pos[1]];
             if (next_obj == 'X') { // case of getting stuck for adjacent row also blocked
@@ -290,17 +300,13 @@ Returns:
     0 if origin has already reached target in dimension
 */
 int DirectionalMove(int curr_dim, int target_dim) {
-    int toward_step;
-
     if (curr_dim > target_dim) {
-        toward_step = -1;
+        return -1;
     } else if (curr_dim < target_dim) {
-        toward_step = 1;
+        return 1;
     } else {
-        toward_step = 0;
+        return 0;
     }
-
-    return toward_step;
 }
 
 /*
@@ -352,12 +358,10 @@ Return:
     returns false if otherwise
 */
 bool WithinBounds(int coords[COORD_DIM]) {
-    if (coords[0] >= 0 && coords[0] < MAP_SIZE &&
-        coords[1] >= 0 && coords[1] < MAP_SIZE) {
-            return true;
-        } else {
-            return false;
-        }
+    return coords[0] >= 0 && 
+           coords[0] < MAP_SIZE && 
+           coords[1] >= 0 && 
+           coords[1] < MAP_SIZE;
 }
 
 /*
@@ -373,7 +377,7 @@ Returns:
     true if any of the blocks match current position.
     false if none of the blocks match the current position.
 */
-bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[num_blocks][COORD_DIM]) {
+bool BlockPresent(int num_blocks, int curr_position[COORD_DIM], int block_coords[][COORD_DIM]) {
     for (int block = 0; block < num_blocks; block++) {
         if (ArrayEqual(block_coords[block], curr_position, COORD_DIM)) {
             return true;

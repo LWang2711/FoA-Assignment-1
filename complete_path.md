@@ -50,6 +50,8 @@ The pseudocode might be as follows:
 if there are no remaining ' ' neighbours:
     for directional index in all directions:
         check neighbour object in directional index direction
+        if neighbour is outside of map:
+            continue
         if neighbour object is '+':
             set current position on map as block 'X'
             set current position as neighbour position
