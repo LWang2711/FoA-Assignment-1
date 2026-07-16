@@ -1,10 +1,3 @@
-/*
-a1.c
-
-Source code for FoA assigment 1 where the focus in algorithmic pathfinding. Laying down
-a foundation in basic C coding style and workflow.
- */
-
 #include <stdio.h>
 #include <stdbool.h>
 
