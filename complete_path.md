@@ -7,15 +7,16 @@ The closest neighbour process will not always work. It it just a normal generali
 The map has objects either being 'S', 'E', ' ', '+'. The pathfinder can only move onto ' ' spaces and is not designed to be able to retrace its steps in case of getting stuck.
 
 For example, the input:
-
+```
 0 0
 4 4
 2
 3 4
 4 3
-
+```
 Has the output:
-
+```
+=================================
 Level 3:
 =================================
 [S][+][+][+][+]
@@ -24,11 +25,13 @@ Level 3:
 [ ][ ][ ][ ][X]
 [ ][ ][ ][ ][E]
 
-Where it gets stuck, whereas the simple directions pathfinding will not get stuck. This is not because closest neighbour process cannot move in the opposite direction of end - in fact it doesn't even know where end is - rather that it cannot backtrack onto where a '+' has already being laid. Technically speaking, simple directions path finding also cannot backtrack, but this isn't a specific issue since in the case of being only allowed to move in the direction of end, the pathfinder will never attempt to backtrack anyways.
+ClosestNeighbour took 6 steps.
+```
+Where it gets stuck, whereas the simple directions pathfinding will not get stuck. This is not because closest neighbour process cannot move in the opposite direction of end - in fact it doesn't even know where end is - rather that it cannot backtrack onto where a '+' has already being laid. Technically speaking, simple directions path finding also cannot backtrack, but this isn't an unintended oversight issue since in the case of being only allowed to move in the direction of end, the pathfinder will never attempt to backtrack anyways.
 
 ## Possible Improvements to Closest Neighbours
 
-As previously said, the issue is that we are not allowed to backtrack. To fix this, we simply extend the order of hierarchy for each direction. Intuitively this look like:
+As previously said, the issue is that we are not allowed to backtrack. To fix this, we simply extend the order of hierarchy for each direction. Intuitively this looks like:
 
 - Check if your neighbour is empty as per ' ', and if yes then move to it.
 - We check the neighbours in the following order:
@@ -36,17 +39,19 @@ As previously said, the issue is that we are not allowed to backtrack. To fix th
     2. Right
     3. Down
     4. Left
-- We then check if your neighbour has already being stepped on as per '+' using the same hierarchy as above.
+- We then check if your neighbour has already being stepped on as per '+' using the same hierarchy as above
+- We then lay 'X' on top of where we just where to avoid double backtracking and an infinite loop.
 - We end the function when we find the end or there are no ' ' nor '+' neighbours left to move to.
 
 Using this above hierarchy is crucial since it guarantees that any available empty spot is moved to first before considering retracing it's steps; to prevent an infinite loop of constantly retracing the pathfinding steps.
 
-The pseudocode is actually minimal but also very delicate if actually implemented. Within ```ClosestFreeNeighbour```, none of the overall recursive stucture needs to be changed. Rather, the iteration needs to be doubled up to include '+' after every empty direction has being considered. However, we need a separate for loop since we need to check all of the four directions for empty spaces before checking them for already step on spaces. 
+The pseudocode is actually minimal but also very delicate if implemented. Within ```ClosestFreeNeighbour```, none of the overall recursive stucture needs to be changed. Rather, the iteration needs to be doubled up to include '+' after every empty direction has being considered. However, we need a separate for loop since we need to check all of the four directions for empty spaces before checking them for already step on spaces. 
 
-Another issue is that there might be a case where we are allowed to backtrack but completely surrounded by backtracked cells. This will cause in infinite backtracking loop. In this setup, there is no point of re-entering an already backtracked cell, and not allowing double backtracking can solve our problem. The psudeocode might look something like:
+Another issue is that there might be a case where we are allowed to backtrack but completely surrounded by backtracked cells. This will cause an infinite backtracking loop. In this setup, there is no point of re-entering an already backtracked cell, and not allowing double backtracking can solve our problem.
 
 The pseudocode might be as follows:
 
+```
 if there are no remaining ' ' neighbours:
     for directional index in all directions:
         check neighbour object in directional index direction
@@ -59,5 +64,5 @@ if there are no remaining ' ' neighbours:
             break
         else if neighbour object is 'E':
             break
-
+```
 This way, any place that has been double backtracked acts as a block, so our pathfinder eventually finds the end or at least gets stuck and terminates the process.
